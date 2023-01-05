@@ -9,7 +9,6 @@ public class GameBoard extends JFrame {
         GridBagConstraints gc = new GridBagConstraints();
         getContentPane().setBackground(new Color(0,102,153));
 
-
         gc.weightx = 0;
         gc.weighty = 0;
         gc.gridx = 0;
