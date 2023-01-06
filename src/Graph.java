@@ -17,6 +17,8 @@ public class Graph extends JPanel implements MouseListener {
     static int col7 = 805;
     static Map<Integer,ArrayList<Integer>> yellowMap = new HashMap<>();
     static Map<Integer,ArrayList<Integer>> orangeMap = new HashMap<>();
+    static Map<Integer,ArrayList<Integer>> yellowMaptemp;
+    static Map<Integer,ArrayList<Integer>> orangeMaptemp;
     static Color orange = new Color(214,71,0);
     static Color yellow = new Color(235,235,0);
     static Color color = yellow;
@@ -110,18 +112,8 @@ public class Graph extends JPanel implements MouseListener {
     }
 
     public void winCheck(){
-        /*
-            [5, 5]   [5, 165]   [5, 325]   [5, 485]   [5, 645]   [5, 805]
-            [165, 5] [165, 165] [165, 325] [165, 485] [165, 645] [165, 805]
-            [325, 5] [325, 165] [325, 325] [325, 485] [325, 645] [325, 805]
-            [485, 5] [485, 165] [485, 325] [485, 485] [485, 645] [485, 805]
-            [645, 5] [645, 165] [645, 325] [645, 485] [645, 645] [645, 805]
-            [805, 5] [805, 165] [805, 325] [805, 485] [805, 645] [805, 805]
-            [965, 5] [965, 165] [965, 325] [965, 485] [965, 645] [965, 805]
-         */
-
-        for (int i = 0; i < 7; i++){
-            for(int j = 0; j < 4; j++){
+        for (int i = 0; i < 10; i++){
+            for(int j = 0; j < 10; j++){
                 checkWin(yellowMap,i,j);
                 checkWin(orangeMap,i,j);
             }
@@ -132,8 +124,11 @@ public class Graph extends JPanel implements MouseListener {
     public void checkWin(Map<Integer,ArrayList<Integer>> map, int i, int j){
         int[] rows = {5,165,325,485,645,805};
         int[] columns = {5,165,325,485,645,805,965};
+        ArrayList<Integer> list = new ArrayList<>(map.keySet());
+
+
         try {
-            if ((map.get(columns[i]).get(j) - map.get(columns[i]).get(j+1) == 160)
+            if ((   map.get(columns[i]).get(j) - map.get(columns[i]).get(j+1) == 160)
                     && (map.get(columns[i]).get(j+1) - map.get(columns[i]).get(j+2) == 160)
                     && (map.get(columns[i]).get(j+2) - map.get(columns[i]).get(j+3) == 160)){
 
@@ -143,30 +138,36 @@ public class Graph extends JPanel implements MouseListener {
                 winPaint(columns[i],map.get(columns[i]).get(j+2));
                 winPaint(columns[i],map.get(columns[i]).get(j+3));
             }
-        }catch (Exception e){
-            //
+        }catch (Exception e){//
         }
-        ArrayList<Integer> list = new ArrayList<>(map.keySet());
-        try {
-            for (int var:rows){
-                if (    map.get(list.get(i)).contains(var) &&
-                        map.get(list.get(i+1)).contains(var) &&
-                        map.get(list.get(i+2)).contains(var) &&
-                        map.get(list.get(i+3)).contains(var)){
 
-                    removeMouseListener(this);
-                    winPaint(list.get(i),var);
-                    winPaint(list.get(i+1),var);
-                    winPaint(list.get(i+2),var);
-                    winPaint(list.get(i+3),var);
-                }
+
+        try {
+            ArrayList<Integer> arrayList1 = new ArrayList<>(map.get(columns[i]));
+            Collections.sort(arrayList1);
+            ArrayList<Integer> arrayList2 = new ArrayList<>(map.get(columns[i+1]));
+            Collections.sort(arrayList2);
+            ArrayList<Integer> arrayList3 = new ArrayList<>(map.get(columns[i+2]));
+            Collections.sort(arrayList3);
+            ArrayList<Integer> arrayList4 = new ArrayList<>(map.get(columns[i+3]));
+            Collections.sort(arrayList4);
+            if ((   arrayList1.get(j).equals(arrayList2.get(j)))
+                    && (arrayList2.get(j).equals(arrayList3.get(j)))
+                    && (arrayList3.get(j).equals(arrayList4.get(j)))){
+
+                removeMouseListener(this);
+                winPaint(columns[i],arrayList1.get(j));
+                winPaint(columns[i+1],arrayList2.get(j));
+                winPaint(columns[i+2],arrayList3.get(j));
+                winPaint(columns[i+3],arrayList4.get(j));
             }
-        }catch (Exception e){
-            //
+        }catch (Exception e){//
         }
+
 
 
     }
+
 
     public void adder(){
         if(color == yellow){
@@ -187,7 +188,6 @@ public class Graph extends JPanel implements MouseListener {
             yellowMap.put(position,arrayList);
         }
     }
-
     @Override
     public void mousePressed(MouseEvent e) {}
     @Override
