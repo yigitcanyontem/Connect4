@@ -17,8 +17,6 @@ public class Graph extends JPanel implements MouseListener {
     static int col7 = 805;
     static Map<Integer,ArrayList<Integer>> yellowMap = new HashMap<>();
     static Map<Integer,ArrayList<Integer>> orangeMap = new HashMap<>();
-    static Map<Integer,ArrayList<Integer>> yellowMaptemp;
-    static Map<Integer,ArrayList<Integer>> orangeMaptemp;
     static Color orange = new Color(214,71,0);
     static Color yellow = new Color(235,235,0);
     static Color color = yellow;
@@ -80,28 +78,30 @@ public class Graph extends JPanel implements MouseListener {
         if(yellowMap.get(position) == null || orangeMap.get(position) == null){
             updater(position,defCol);
             adder();
+            winCheck();
+            if(color == yellow){
+                color = orange;
+            }else {
+                color = yellow;
+            }
         }else {
-            if (yellowMap.get(position).size() + orangeMap.get(position).size() < 6){
+            if ((yellowMap.get(position).size() + orangeMap.get(position).size()) < 6){
                 updater(position,defCol);
                 adder();
+                winCheck();
+                if(color == yellow){
+                    color = orange;
+                }else {
+                    color = yellow;
+                }
             }
         }
-        winCheck();
-        if(color == yellow){
-            color = orange;
-        }else {
-            color = yellow;
-        }
     }
-
     public void updater(int positionx, int positiony){
         Graphics g = getGraphics();
         g.setColor(color);
         g.fillOval(positionx,positiony,121,121);
-
-
     }
-
     public void winPaint(int positionx, int positiony){
         Graphics g = getGraphics();
         g.setColor(new Color(254,155,0));
@@ -110,23 +110,21 @@ public class Graph extends JPanel implements MouseListener {
         g.setColor(color);
         g.fillOval(positionx,positiony,120,120);
     }
-
     public void winCheck(){
         for (int i = 0; i < 10; i++){
             for(int j = 0; j < 10; j++){
                 checkWin(yellowMap,i,j);
                 checkWin(orangeMap,i,j);
             }
-
         }
     }
 
     public void checkWin(Map<Integer,ArrayList<Integer>> map, int i, int j){
         int[] rows = {5,165,325,485,645,805};
         int[] columns = {5,165,325,485,645,805,965};
-        ArrayList<Integer> list = new ArrayList<>(map.keySet());
 
 
+        //check in columns
         try {
             if ((   map.get(columns[i]).get(j) - map.get(columns[i]).get(j+1) == 160)
                     && (map.get(columns[i]).get(j+1) - map.get(columns[i]).get(j+2) == 160)
@@ -141,33 +139,60 @@ public class Graph extends JPanel implements MouseListener {
         }catch (Exception e){//
         }
 
-
+        //check in rows
         try {
-            ArrayList<Integer> arrayList1 = new ArrayList<>(map.get(columns[i]));
-            Collections.sort(arrayList1);
-            ArrayList<Integer> arrayList2 = new ArrayList<>(map.get(columns[i+1]));
-            Collections.sort(arrayList2);
-            ArrayList<Integer> arrayList3 = new ArrayList<>(map.get(columns[i+2]));
-            Collections.sort(arrayList3);
-            ArrayList<Integer> arrayList4 = new ArrayList<>(map.get(columns[i+3]));
-            Collections.sort(arrayList4);
-            if ((   arrayList1.get(j).equals(arrayList2.get(j)))
-                    && (arrayList2.get(j).equals(arrayList3.get(j)))
-                    && (arrayList3.get(j).equals(arrayList4.get(j)))){
+            for (int row:rows){
+                if (    (map.get(columns[i]).contains(row) && map.get(columns[i+1]).contains(row)
+                        && (map.get(columns[i+1]).contains(row) && map.get(columns[i+2]).contains(row)
+                        && (map.get(columns[i+2]).contains(row) && map.get(columns[i+3]).contains(row))))){
 
-                removeMouseListener(this);
-                winPaint(columns[i],arrayList1.get(j));
-                winPaint(columns[i+1],arrayList2.get(j));
-                winPaint(columns[i+2],arrayList3.get(j));
-                winPaint(columns[i+3],arrayList4.get(j));
+                    removeMouseListener(this);
+                    winPaint(columns[i],row);
+                    winPaint(columns[i+1],row);
+                    winPaint(columns[i+2],row);
+                    winPaint(columns[i+3],row);
+                }
             }
         }catch (Exception e){//
         }
 
+        //check in diagonals down to up
+        try {
+            for (int v = 0; v < rows.length+1; v++){
+                if (    (map.get(columns[i]).contains(rows[v]) && map.get(columns[i+1]).contains(rows[v-1])
+                        && (map.get(columns[i+1]).contains(rows[v-1]) && map.get(columns[i+2]).contains(rows[v-2])
+                        && (map.get(columns[i+2]).contains(rows[v-2]) && map.get(columns[i+3]).contains(rows[v-3]))))){
+
+                    removeMouseListener(this);
+                    winPaint(columns[i],  rows[v]);
+                    winPaint(columns[i+1],rows[v-1]);
+                    winPaint(columns[i+2],rows[v-2]);
+                    winPaint(columns[i+3],rows[v-3]);
+
+                }
+            }
 
 
+        }catch (Exception e){//
+        }
+
+        //check in diagonals up to down
+        try {
+            for (int v = 0; v < rows.length+1; v++){
+                if (    (map.get(columns[i]).contains(rows[v]) && map.get(columns[i+1]).contains(rows[v+1])
+                        && (map.get(columns[i+1]).contains(rows[v+1]) && map.get(columns[i+2]).contains(rows[v+2])
+                        && (map.get(columns[i+2]).contains(rows[v+2]) && map.get(columns[i+3]).contains(rows[v+3]))))){
+
+                    removeMouseListener(this);
+                    winPaint(columns[i],  rows[v]);
+                    winPaint(columns[i+1],rows[v+1]);
+                    winPaint(columns[i+2],rows[v+2]);
+                    winPaint(columns[i+3],rows[v+3]);
+                }
+            }
+        }catch (Exception e){//
+        }
     }
-
 
     public void adder(){
         if(color == yellow){
